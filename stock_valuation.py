@@ -22,19 +22,70 @@ class stockBlock(object):
 
 class position(object):
     """docstring for position"""
-    def __init__(self, name, symbol, * blocks):
+    
+    def __init__(self, name, symbol, blocks):
         self.name = name
         self.symbol = symbol
-        self.blocks =  blocks
+        self.blocks = blocks
+        self.sum_shares = self.sumShares(self.blocks)
+        self.sum_purch_price = self.sumPurchPrice()
+        # TODO
+        self.current_price = self.setCurrentPrice() 
+           
+    
+    def __str__(self):
+        return "%s, total shares: %s, total purchase price: %s" % (self.symbol, self.sum_shares, self.sum_purch_price )
 
-    #def __str__(self):
-    #    return "%s, %s" % (self.symbol,  )
+    def sumShares(self, blocks):
+        sum = 0
+        if type(blocks) is list:    # might be a single block or a list of
+            for block in blocks:
+                sum += block.shares
+        else:
+            sum = blocks.shares
+        return sum
 
+    def sumPurchPrice(self):
+        sum = 0
+        if type(self.blocks) is list:
+            for block in self.blocks:
+                sum += block.purch_price
+        else:
+            sum = self.blocks.purch_price
+        return sum
 
-    #def sumShares(self):
-    #    sum = 0
-    #    for b in self.blocks:
-    #        sum += b.shares
+    def getPurchValue(self):
+        sum = 0
+        if type(self.blocks) is list:
+            for block in self.blocks:
+                sum += block.getPurchaseValue()
+        else:
+            sum = self.blocks.getPurchaseValue()
+        return sum
+
+    def getSaleValue(self, sale_price):
+        sum = 0
+        if type(self.blocks) is list:
+            for block in self.blocks:
+                sum += block.getSaleValue(sale_price)
+        else:
+            sum = self.blocks.getSaleValue(sale_price)
+        return sum
+
+    def getROI(self, sale_price):
+        return self.getSaleValue(sale_price) - self.getPurchValue()
+
+    # TODO
+    def setCurrentPrice(self):
+        print "Enter current price: "
+        return raw_input('> ')
+
+    # TODO
+    def getCurrentValue(self, current_price):
+        sum_current_value = 0
+        for block in self:
+            sum_current_value += block.getSaleValue(self.current_price)
+        print sum_current_value
 
 
 
@@ -51,6 +102,47 @@ blocksEK = [
     stockBlock( purch_date='25-Oct-2001', purch_price=27.61, shares=28 )
 ]
 
+portfolio = [
+    position("General Motors", "GM", blocksGM),
+    position("Eastman Kodak", "EK", blocksEK),
+    position("Caterpillar", "CAT",
+        [ stockBlock(purch_date='25-Oct-2001',
+            purch_price=42.84, shares=18) ])
+]
 
-a = position("GenM", "GM", blocksGM)
-print a.blocks
+
+
+def report1(portf):
+    '''Purchase values of individual Blocks in Positions.'''
+
+    for posit in portf:
+        for block in posit.blocks:
+            print posit.symbol, block.getPurchaseValue()
+
+def report2(portf):
+    '''Summarize each position with symbol, total number of shares,
+    total value of the stock purchased and average price paid.'''
+
+    for posit in portf:
+        shares = 0
+        tot_val = 0
+        for block in posit.blocks:
+            shares += block.shares
+            tot_val += block.getPurchaseValue()
+
+        print "Position: %s, shares: %s, value: %s, average: %s." % (posit.symbol, shares, tot_val, (tot_val / shares))
+
+
+
+
+report1(portfolio)
+report2(portfolio)
+
+
+
+
+
+
+
+
+

@@ -29,8 +29,7 @@ class position(object):
         self.blocks = blocks
         self.sum_shares = self.sumShares(self.blocks)
         self.sum_purch_price = self.sumPurchPrice()
-        # TODO
-        self.current_price = self.setCurrentPrice() 
+        self.current_price = 0  #initial value has to be set
            
     
     def __str__(self):
@@ -63,29 +62,29 @@ class position(object):
             sum = self.blocks.getPurchaseValue()
         return sum
 
-    def getSaleValue(self, sale_price):
+    def getSaleValue(self):
         sum = 0
         if type(self.blocks) is list:
             for block in self.blocks:
-                sum += block.getSaleValue(sale_price)
+                sum += block.getSaleValue(self.current_price)
         else:
-            sum = self.blocks.getSaleValue(sale_price)
+            sum = self.blocks.getSaleValue(self.current_price)
         return sum
 
-    def getROI(self, sale_price):
-        return self.getSaleValue(sale_price) - self.getPurchValue()
+    def getROI(self):
+        return self.getSaleValue(self.current_price) - self.getPurchValue()
 
     # TODO
     def setCurrentPrice(self):
-        print "Enter current price: "
-        return raw_input('> ')
+        print "Enter current price for %s: " % self.name
+        self.current_price = float(raw_input('> '))
 
     # TODO
-    def getCurrentValue(self, current_price):
+    def getCurrentValue(self):
         sum_current_value = 0
-        for block in self:
+        for block in self.blocks:
             sum_current_value += block.getSaleValue(self.current_price)
-        print sum_current_value
+        print "Current value of the position %s is %s." % (self.name, sum_current_value)
 
 
 
@@ -117,7 +116,7 @@ def report1(portf):
 
     for posit in portf:
         for block in posit.blocks:
-            print posit.symbol, block.getPurchaseValue()
+            print posit.symbol, "Purchase value: ", block.getPurchaseValue()
 
 def report2(portf):
     '''Summarize each position with symbol, total number of shares,
@@ -135,13 +134,14 @@ def report2(portf):
 
 
 
-report1(portfolio)
-report2(portfolio)
+#report1(portfolio)
+#report2(portfolio)
 
 
-
-
-
+a = position("General Motors", "GM", blocksGM)
+a.setCurrentPrice()
+a.getCurrentValue()
+                                                                                                                                          
 
 
 

@@ -1,4 +1,4 @@
-# building_skills_with_python  
+# building_skills_in_python  
   
   Projects and exercises from the online book "Building skills with Python"  
 
